@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\GoodsReceipt;
 use App\Models\PurchaseOrderItem;
 use App\Models\Supplier;
 use App\Models\Warehouse;
@@ -78,6 +79,14 @@ class PurchaseOrder extends Model
     public function items(): HasMany
     {
         return $this->hasMany(PurchaseOrderItem::class);
+    }
+
+    /**
+     * Get goods receipt.
+     */
+    public function goodsReceipts(): HasMany
+    {
+        return $this->hasMany(GoodsReceipt::class);
     }
 
     protected function casts(): array

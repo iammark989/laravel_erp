@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\GoodsReceiptItem;
 use App\Models\InventoryTransactionItem;
 use App\Models\Product;
 use App\Models\PurchaseOrderItem;
@@ -105,6 +106,14 @@ class ProductVariant extends Model
     public function inventoryTransactionItems(): HasMany
     {
         return $this->hasMany(InventoryTransactionItem::class);
+    }
+
+    /**
+     * Get goods receipt items.
+     */
+    public function goodsReceiptItems(): HasMany
+    {
+        return $this->hasMany(GoodsReceiptItem::class);
     }
 
     /**

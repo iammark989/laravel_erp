@@ -2,8 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\GoodsReceiptItem;
+use App\Models\ProductVariant;
+use App\Models\PurchaseOrder;
+use App\Models\Uom;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PurchaseOrderItem extends Model
 {
@@ -42,6 +47,14 @@ class PurchaseOrderItem extends Model
     public function purchaseUom(): BelongsTo
     {
         return $this->belongsTo(Uom::class, 'purchase_uom_id');
+    }
+
+    /**
+     * Get goods receipt items.
+     */
+    public function goodsReceiptItems(): HasMany
+    {
+        return $this->hasMany(GoodsReceiptItem::class);
     }
 
     protected function casts(): array

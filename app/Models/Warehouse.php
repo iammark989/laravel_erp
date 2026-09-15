@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\GoodsReceipt;
 use App\Models\InventoryTransaction;
 use App\Models\PurchaseOrder;
 use App\Models\User;
@@ -65,7 +66,13 @@ class Warehouse extends Model
         return $this->hasMany(PurchaseOrder::class);
     }
 
-    
+    /**
+     * Get the goods receipt for this supplier.
+     */
+    public function goodsReceipts(): HasMany
+    {
+        return $this->hasMany(GoodsReceipt::class);
+    }
 
     /**
      * Get the attributes that should be cast.
