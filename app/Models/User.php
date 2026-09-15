@@ -6,6 +6,9 @@ namespace App\Models;
 use App\Models\GoodsReceipt;
 use App\Models\InventoryAdjustment;
 use App\Models\InventoryTransaction;
+use App\Models\Product;
+use App\Models\ProductVariant;
+use App\Models\PurchaseOrder;
 use App\Models\Role;
 use App\Models\Warehouse;
 use Database\Factories\UserFactory;
@@ -13,6 +16,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -61,35 +65,91 @@ class User extends Authenticatable implements PasskeyUser
     }
 
     /**
-     * Get user for warehouse.
+     * Get products created by this user.
      */
-    public function warehouses(): HasMany
+    public function products(): HasMany
     {
-        return $this->hasMany(Warehouse::class);
+        return $this->hasMany(Product::class, 'created_by');
     }
 
     /**
-     * Get inventory transactions.
+     * Get product variants created by this user.
+     */
+    public function createdProductVariants(): HasMany
+    {
+        return $this->hasMany(ProductVariant::class, 'created_by');
+    }
+
+    /**
+     * Get product variants updated by this user.
+     */
+    public function updatedProductVariants(): HasMany
+    {
+        return $this->hasMany(ProductVariant::class, 'updated_by');
+    }
+
+    /**
+     * Get warehouses created by this user.
+     */
+    public function createdWarehouses(): HasMany
+    {
+        return $this->hasMany(Warehouse::class, 'created_by');
+    }
+
+    /**
+     * Get warehouses updated by this user.
+     */
+    public function updatedWarehouses(): HasMany
+    {
+        return $this->hasMany(Warehouse::class, 'updated_by');
+    }
+
+    /**
+     * Get inventory transactions created by this user.
      */
     public function inventoryTransactions(): HasMany
     {
-        return $this->hasMany(InventoryTransaction::class);
+        return $this->hasMany(InventoryTransaction::class, 'created_by');
     }
 
     /**
-     * Get the goods receipt for this supplier.
+     * Get purchase orders created by this user.
+     */
+    public function purchaseOrders(): HasMany
+    {
+        return $this->hasMany(PurchaseOrder::class, 'created_by');
+    }
+
+    /**
+     * Get purchase orders approved by this user.
+     */
+    public function approvedPurchaseOrders(): HasMany
+    {
+        return $this->hasMany(PurchaseOrder::class, 'approved_by');
+    }
+
+    /**
+     * Get purchase orders updated by this user.
+     */
+    public function updatedPurchaseOrders(): HasMany
+    {
+        return $this->hasMany(PurchaseOrder::class, 'updated_by');
+    }
+
+    /**
+     * Get goods receipts created by this user.
      */
     public function goodsReceipts(): HasMany
     {
-        return $this->hasMany(GoodsReceipt::class);
+        return $this->hasMany(GoodsReceipt::class, 'created_by');
     }
 
     /**
-     * Get the goods receipt for this supplier.
+     * Get inventory adjustments created by this user.
      */
     public function inventoryAdjustments(): HasMany
     {
-        return $this->hasMany(InventoryAdjustment::class);
+        return $this->hasMany(InventoryAdjustment::class, 'created_by');
     }
 
 
