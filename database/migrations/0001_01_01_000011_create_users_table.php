@@ -33,6 +33,7 @@ return new class extends Migration
                 ->restrictOnDelete();
 
             $table->boolean('is_active')->default(true);
+            
             $table->rememberToken();
             $table->timestamps();
         });

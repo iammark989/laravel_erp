@@ -3,7 +3,9 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\InventoryTransaction;
 use App\Models\Role;
+use App\Models\Warehouse;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -55,6 +57,23 @@ class User extends Authenticatable implements PasskeyUser
     {
         return $this->belongsTo(Role::class);
     }
+
+    /**
+     * Get user for warehouse.
+     */
+    public function warehouses(): HasMany
+    {
+        return $this->hasMany(Warehouse::class);
+    }
+
+    /**
+     * Get inventory transactions.
+     */
+    public function inventoryTransactions(): HasMany
+    {
+        return $this->hasMany(InventoryTransaction::class);
+    }
+
 
     /**
      * Get the attributes that should be cast.
