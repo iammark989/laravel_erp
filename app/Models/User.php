@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\GoodsReceipt;
+use App\Models\InventoryAdjustment;
 use App\Models\InventoryTransaction;
 use App\Models\Role;
 use App\Models\Warehouse;
@@ -81,6 +82,14 @@ class User extends Authenticatable implements PasskeyUser
     public function goodsReceipts(): HasMany
     {
         return $this->hasMany(GoodsReceipt::class);
+    }
+
+    /**
+     * Get the goods receipt for this supplier.
+     */
+    public function inventoryAdjustments(): HasMany
+    {
+        return $this->hasMany(InventoryAdjustment::class);
     }
 
 

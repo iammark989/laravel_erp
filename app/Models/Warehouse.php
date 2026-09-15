@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\GoodsReceipt;
+use App\Models\InventoryAdjustment;
 use App\Models\InventoryTransaction;
 use App\Models\PurchaseOrder;
 use App\Models\User;
@@ -72,6 +73,14 @@ class Warehouse extends Model
     public function goodsReceipts(): HasMany
     {
         return $this->hasMany(GoodsReceipt::class);
+    }
+
+    /**
+     * Get the inventory adjustment.
+     */
+    public function inventoryAdjustments(): HasMany
+    {
+        return $this->hasMany(InventoryAdjustment::class);
     }
 
     /**

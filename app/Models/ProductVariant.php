@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\GoodsReceiptItem;
+use App\Models\InventoryAdjustmentItem;
 use App\Models\InventoryTransactionItem;
 use App\Models\Product;
 use App\Models\PurchaseOrderItem;
@@ -130,6 +131,14 @@ class ProductVariant extends Model
     public function prices(): HasMany
     {
         return $this->hasMany(VariantPrice::class);
+    }
+
+    /**
+     * Get inventory adjustment items.
+     */ 
+    public function inventoryAdjustmentItems(): HasMany
+    {
+        return $this->hasMany(InventoryAdjustmentItem::class);
     }
 
     /**
