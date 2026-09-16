@@ -18,7 +18,7 @@ class Uom extends Model
      /**
      * Get the base unit of measure.
      */
-    public function baseUoms(): HasMany
+    public function baseVariants(): HasMany
     {
         return $this->hasMany(ProductVariant::class, 'base_uom_id');
     }
@@ -26,7 +26,7 @@ class Uom extends Model
     /**
      * Get the selling unit of measure.
      */
-    public function sellingUoms(): HasMany
+    public function sellingVariants(): HasMany
     {
         return $this->hasMany(ProductVariant::class, 'selling_uom_id');
     }
@@ -34,7 +34,7 @@ class Uom extends Model
     /**
      * Get the purchasing unit of measure.
      */
-    public function purchasingUoms(): HasMany
+    public function purchasingVariants(): HasMany
     {
         return $this->hasMany(ProductVariant::class, 'purchasing_uom_id');
     }
