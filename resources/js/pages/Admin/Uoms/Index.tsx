@@ -1,10 +1,9 @@
 import AppLayout from '@/layouts/app-layout';
 import { Head, Link } from '@inertiajs/react';
 
-interface Category {
+interface Uom {
     id: number;
-    name: string;
-    slug: string;
+    code: string;
     description: string | null;
     is_active: boolean;
 }
@@ -15,8 +14,8 @@ interface PaginationLink {
     active: boolean;
 }
 
-interface PaginatedCategories {
-    data: Category[];
+interface PaginatedUoms {
+    data: Uom[];
     links: PaginationLink[];
     current_page: number;
     last_page: number;
@@ -26,31 +25,28 @@ interface PaginatedCategories {
 }
 
 interface Props {
-    categories: PaginatedCategories;
+    uoms: PaginatedUoms;
 }
 
-export default function Index({ categories }: Props) {
+export default function Index({ uoms }: Props) {
     return (
         <AppLayout>
-            <Head title="Categories" />
+            <Head title="UOMs" />
 
             <div className="flex h-full flex-1 flex-col gap-6 p-6">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-semibold">
-                            Categories
-                        </h1>
-
+                        <h1 className="text-2xl font-semibold">UOMs</h1>
                         <p className="text-sm text-muted-foreground">
-                            Manage your product categories.
+                            Manage your units of measure.
                         </p>
                     </div>
 
                     <Link
-                        href="/admin/categories/create"
+                        href="/admin/uoms/create"
                         className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
                     >
-                        Add Category
+                        Add UOM
                     </Link>
                 </div>
 
@@ -60,21 +56,14 @@ export default function Index({ categories }: Props) {
                             <thead>
                                 <tr className="border-b bg-muted/50">
                                     <th className="px-4 py-3 text-left font-medium">
-                                        Name
+                                        Code
                                     </th>
-
-                                    <th className="px-4 py-3 text-left font-medium">
-                                        Slug
-                                    </th>
-
                                     <th className="px-4 py-3 text-left font-medium">
                                         Description
                                     </th>
-
                                     <th className="px-4 py-3 text-left font-medium">
                                         Status
                                     </th>
-
                                     <th className="px-4 py-3 text-right font-medium">
                                         Actions
                                     </th>
@@ -82,33 +71,29 @@ export default function Index({ categories }: Props) {
                             </thead>
 
                             <tbody>
-                                {categories.data.length > 0 ? (
-                                    categories.data.map((category) => (
+                                {uoms.data.length > 0 ? (
+                                    uoms.data.map((uom) => (
                                         <tr
-                                            key={category.id}
+                                            key={uom.id}
                                             className="border-b last:border-0"
                                         >
                                             <td className="px-4 py-3 font-medium">
-                                                {category.name}
+                                                {uom.code}
                                             </td>
 
                                             <td className="px-4 py-3 text-muted-foreground">
-                                                {category.slug}
-                                            </td>
-
-                                            <td className="px-4 py-3 text-muted-foreground">
-                                                {category.description || '—'}
+                                                {uom.description || '—'}
                                             </td>
 
                                             <td className="px-4 py-3">
                                                 <span
                                                     className={
-                                                        category.is_active
+                                                        uom.is_active
                                                             ? 'text-green-600'
-                                                            : 'text-muted-foreground'
+                                                            : 'text-red-600'
                                                     }
                                                 >
-                                                    {category.is_active
+                                                    {uom.is_active
                                                         ? 'Active'
                                                         : 'Inactive'}
                                                 </span>
@@ -116,7 +101,7 @@ export default function Index({ categories }: Props) {
 
                                             <td className="px-4 py-3 text-right">
                                                 <Link
-                                                    href={`/admin/categories/${category.id}/edit`}
+                                                    href={`/admin/uoms/${uom.id}/edit`}
                                                     className="text-sm font-medium text-primary hover:underline"
                                                 >
                                                     Edit
@@ -127,10 +112,10 @@ export default function Index({ categories }: Props) {
                                 ) : (
                                     <tr>
                                         <td
-                                            colSpan={5}
+                                            colSpan={4}
                                             className="px-4 py-8 text-center text-muted-foreground"
                                         >
-                                            No categories found.
+                                            No UOMs found.
                                         </td>
                                     </tr>
                                 )}
@@ -139,14 +124,13 @@ export default function Index({ categories }: Props) {
                     </div>
                 </div>
 
-                {categories.links.length > 3 && (
-                    <div className="flex flex-wrap gap-2">
-                        {categories.links.map((link, index) => (
+                {uoms.links.length > 3 && (
+                    <div className="flex flex-wrap items-center gap-2">
+                        {uoms.links.map((link, index) => (
                             <Link
                                 key={index}
                                 href={link.url ?? '#'}
-                                preserveScroll
-                                className={`rounded-md border px-3 py-2 text-sm ${
+                                className={`rounded-md border px-3 py-1.5 text-sm ${
                                     link.active
                                         ? 'bg-primary text-primary-foreground'
                                         : 'hover:bg-muted'
@@ -155,13 +139,10 @@ export default function Index({ categories }: Props) {
                                         ? 'pointer-events-none opacity-50'
                                         : ''
                                 }`}
-                            >
-                                <span
-                                    dangerouslySetInnerHTML={{
-                                        __html: link.label,
-                                    }}
-                                />
-                            </Link>
+                                dangerouslySetInnerHTML={{
+                                    __html: link.label,
+                                }}
+                            />
                         ))}
                     </div>
                 )}

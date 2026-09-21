@@ -1,36 +1,76 @@
+import AppLayout from '@/layouts/app-layout';
 import { Head } from '@inertiajs/react';
-import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
-import { dashboard } from '@/routes';
 
 export default function Dashboard() {
     return (
-        <>
-            <Head title="Dashboard" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-                    <div className="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
+        <AppLayout>
+            <Head title="ERP Dashboard" />
+
+            <div className="flex h-full flex-1 flex-col gap-6 p-6">
+                <div>
+                    <h1 className="text-2xl font-semibold">
+                        ERP Dashboard
+                    </h1>
+
+                    <p className="text-sm text-muted-foreground">
+                        Overview of your business operations.
+                    </p>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                    <div className="rounded-lg border p-6">
+                        <p className="text-sm text-muted-foreground">
+                            Products
+                        </p>
+
+                        <p className="mt-2 text-3xl font-semibold">
+                            —
+                        </p>
                     </div>
-                    <div className="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
+
+                    <div className="rounded-lg border p-6">
+                        <p className="text-sm text-muted-foreground">
+                            Inventory
+                        </p>
+
+                        <p className="mt-2 text-3xl font-semibold">
+                            —
+                        </p>
                     </div>
-                    <div className="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
+
+                    <div className="rounded-lg border p-6">
+                        <p className="text-sm text-muted-foreground">
+                            Suppliers
+                        </p>
+
+                        <p className="mt-2 text-3xl font-semibold">
+                            —
+                        </p>
+                    </div>
+
+                    <div className="rounded-lg border p-6">
+                        <p className="text-sm text-muted-foreground">
+                            Warehouses
+                        </p>
+
+                        <p className="mt-2 text-3xl font-semibold">
+                            —
+                        </p>
                     </div>
                 </div>
-                <div className="border-sidebar-border/70 dark:border-sidebar-border relative min-h-[100vh] flex-1 overflow-hidden rounded-xl border md:min-h-min">
-                    <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
+
+                <div className="rounded-lg border p-6">
+                    <h2 className="text-lg font-semibold">
+                        ERP Overview
+                    </h2>
+
+                    <p className="mt-2 text-sm text-muted-foreground">
+                        Your ERP dashboard will display inventory,
+                        purchasing, sales, and operational information
+                        as the system modules are completed.
+                    </p>
                 </div>
             </div>
-        </>
+        </AppLayout>
     );
 }
-
-Dashboard.layout = {
-    breadcrumbs: [
-        {
-            title: 'Dashboard',
-            href: dashboard(),
-        },
-    ],
-};

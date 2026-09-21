@@ -109,6 +109,7 @@ export default function Index({ brands }: Props) {
 
                                             <td className="px-4 py-3 text-right">
                                                 <Link
+                                                    href={`/admin/brands/${brand.id}/edit`}
                                                     className="text-sm font-medium text-primary hover:underline"
                                                 >
                                                     Edit
