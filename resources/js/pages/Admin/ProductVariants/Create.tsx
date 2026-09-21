@@ -13,9 +13,23 @@ interface Uom {
     description: string | null;
 }
 
+interface Warehouse {
+    id: number;
+    warehouse_code: string;
+    name: string;
+}
+
+interface PriceList {
+    id: number;
+    code: string;
+    description: string | null;
+}
+
 interface Props {
     products: Product[];
     uoms: Uom[];
+    warehouses: Warehouse[];
+    priceLists: PriceList[];
 }
 
 interface ProductVariantForm {
@@ -25,16 +39,32 @@ interface ProductVariantForm {
     variant_name: string;
     cost_price: string;
     tax_type: 'vatable' | 'vat_exempt' | 'zero_rated';
+
     base_uom_id: string;
+
     selling_uom_id: string;
     selling_qty: string;
+
     purchasing_uom_id: string;
     purchasing_qty: string;
+
+    price_list_id: string;
+    price: string;
+
+    warehouse_id: string;
+    quantity_on_hand: string;
+    reorder_level: string;
+
     remarks: string;
     is_active: boolean;
 }
 
-export default function Create({ products, uoms }: Props) {
+export default function Create({
+    products,
+    uoms,
+    warehouses,
+    priceLists,
+}: Props) {
     const { data, setData, post, processing, errors } =
         useForm<ProductVariantForm>({
             product_id: '',
@@ -43,11 +73,22 @@ export default function Create({ products, uoms }: Props) {
             variant_name: '',
             cost_price: '',
             tax_type: 'vatable',
+
             base_uom_id: '',
+
             selling_uom_id: '',
             selling_qty: '1',
+
             purchasing_uom_id: '',
             purchasing_qty: '1',
+
+            price_list_id: '',
+            price: '',
+
+            warehouse_id: '',
+            quantity_on_hand: '0',
+            reorder_level: '0',
+
             remarks: '',
             is_active: true,
         });
@@ -69,12 +110,14 @@ export default function Create({ products, uoms }: Props) {
                     </h1>
 
                     <p className="text-sm text-muted-foreground">
-                        Add a variant to a product.
+                        Add a variant, initial price, and initial warehouse
+                        inventory.
                     </p>
                 </div>
 
                 <div className="max-w-4xl rounded-lg border p-6">
                     <form onSubmit={submit} className="space-y-6">
+                        {/* Product Information */}
                         <div className="grid gap-6 md:grid-cols-2">
                             <div className="space-y-2">
                                 <label
@@ -146,6 +189,7 @@ export default function Create({ products, uoms }: Props) {
                             </div>
                         </div>
 
+                        {/* SKU / Barcode */}
                         <div className="grid gap-6 md:grid-cols-2">
                             <div className="space-y-2">
                                 <label
@@ -186,7 +230,10 @@ export default function Create({ products, uoms }: Props) {
                                     type="text"
                                     value={data.barcode}
                                     onChange={(event) =>
-                                        setData('barcode', event.target.value)
+                                        setData(
+                                            'barcode',
+                                            event.target.value,
+                                        )
                                     }
                                     className="w-full rounded-md border px-3 py-2"
                                     placeholder="Optional barcode"
@@ -200,6 +247,7 @@ export default function Create({ products, uoms }: Props) {
                             </div>
                         </div>
 
+                        {/* Cost / Tax */}
                         <div className="grid gap-6 md:grid-cols-2">
                             <div className="space-y-2">
                                 <label
@@ -251,7 +299,9 @@ export default function Create({ products, uoms }: Props) {
                                     }
                                     className="w-full rounded-md border px-3 py-2"
                                 >
-                                    <option value="vatable">Vatable</option>
+                                    <option value="vatable">
+                                        Vatable
+                                    </option>
                                     <option value="vat_exempt">
                                         VAT Exempt
                                     </option>
@@ -268,6 +318,7 @@ export default function Create({ products, uoms }: Props) {
                             </div>
                         </div>
 
+                        {/* Base Unit */}
                         <div className="rounded-lg border p-4">
                             <h2 className="mb-4 text-sm font-semibold">
                                 Base Unit
@@ -317,6 +368,7 @@ export default function Create({ products, uoms }: Props) {
                             </div>
                         </div>
 
+                        {/* Selling Unit */}
                         <div className="rounded-lg border p-4">
                             <h2 className="mb-4 text-sm font-semibold">
                                 Selling Unit
@@ -395,6 +447,7 @@ export default function Create({ products, uoms }: Props) {
                             </div>
                         </div>
 
+                        {/* Purchasing Unit */}
                         <div className="rounded-lg border p-4">
                             <h2 className="mb-4 text-sm font-semibold">
                                 Purchasing Unit
@@ -473,6 +526,210 @@ export default function Create({ products, uoms }: Props) {
                             </div>
                         </div>
 
+                        {/* Pricing */}
+                        <div className="rounded-lg border p-4">
+                            <h2 className="mb-1 text-sm font-semibold">
+                                Initial Pricing
+                            </h2>
+
+                            <p className="mb-4 text-sm text-muted-foreground">
+                                Set the initial price for this variant.
+                            </p>
+
+                            <div className="grid gap-6 md:grid-cols-2">
+                                <div className="space-y-2">
+                                    <label
+                                        htmlFor="price_list_id"
+                                        className="text-sm font-medium"
+                                    >
+                                        Price List
+                                    </label>
+
+                                    <select
+                                        id="price_list_id"
+                                        value={data.price_list_id}
+                                        onChange={(event) =>
+                                            setData(
+                                                'price_list_id',
+                                                event.target.value,
+                                            )
+                                        }
+                                        className="w-full rounded-md border px-3 py-2"
+                                    >
+                                        <option value="">
+                                            Select price list
+                                        </option>
+
+                                        {priceLists.map((priceList) => (
+                                            <option
+                                                key={priceList.id}
+                                                value={priceList.id}
+                                            >
+                                                {priceList.code}
+                                                {priceList.description
+                                                    ? ` — ${priceList.description}`
+                                                    : ''}
+                                            </option>
+                                        ))}
+                                    </select>
+
+                                    {errors.price_list_id && (
+                                        <p className="text-sm text-red-600">
+                                            {errors.price_list_id}
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label
+                                        htmlFor="price"
+                                        className="text-sm font-medium"
+                                    >
+                                        Price
+                                    </label>
+
+                                    <input
+                                        id="price"
+                                        type="number"
+                                        step="0.01"
+                                        min="0"
+                                        value={data.price}
+                                        onChange={(event) =>
+                                            setData(
+                                                'price',
+                                                event.target.value,
+                                            )
+                                        }
+                                        className="w-full rounded-md border px-3 py-2"
+                                        placeholder="0.00"
+                                    />
+
+                                    {errors.price && (
+                                        <p className="text-sm text-red-600">
+                                            {errors.price}
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Initial Inventory */}
+                        <div className="rounded-lg border p-4">
+                            <h2 className="mb-1 text-sm font-semibold">
+                                Initial Inventory
+                            </h2>
+
+                            <p className="mb-4 text-sm text-muted-foreground">
+                                Set the starting stock for this variant.
+                            </p>
+
+                            <div className="grid gap-6 md:grid-cols-3">
+                                <div className="space-y-2">
+                                    <label
+                                        htmlFor="warehouse_id"
+                                        className="text-sm font-medium"
+                                    >
+                                        Warehouse
+                                    </label>
+
+                                    <select
+                                        id="warehouse_id"
+                                        value={data.warehouse_id}
+                                        onChange={(event) =>
+                                            setData(
+                                                'warehouse_id',
+                                                event.target.value,
+                                            )
+                                        }
+                                        className="w-full rounded-md border px-3 py-2"
+                                    >
+                                        <option value="">
+                                            Select warehouse
+                                        </option>
+
+                                        {warehouses.map((warehouse) => (
+                                            <option
+                                                key={warehouse.id}
+                                                value={warehouse.id}
+                                            >
+                                                {warehouse.warehouse_code} —{' '}
+                                                {warehouse.name}
+                                            </option>
+                                        ))}
+                                    </select>
+
+                                    {errors.warehouse_id && (
+                                        <p className="text-sm text-red-600">
+                                            {errors.warehouse_id}
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label
+                                        htmlFor="quantity_on_hand"
+                                        className="text-sm font-medium"
+                                    >
+                                        Initial Quantity
+                                    </label>
+
+                                    <input
+                                        id="quantity_on_hand"
+                                        type="number"
+                                        step="0.001"
+                                        min="0"
+                                        value={data.quantity_on_hand}
+                                        onChange={(event) =>
+                                            setData(
+                                                'quantity_on_hand',
+                                                event.target.value,
+                                            )
+                                        }
+                                        className="w-full rounded-md border px-3 py-2"
+                                        placeholder="0.000"
+                                    />
+
+                                    {errors.quantity_on_hand && (
+                                        <p className="text-sm text-red-600">
+                                            {errors.quantity_on_hand}
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label
+                                        htmlFor="reorder_level"
+                                        className="text-sm font-medium"
+                                    >
+                                        Reorder Level
+                                    </label>
+
+                                    <input
+                                        id="reorder_level"
+                                        type="number"
+                                        step="0.001"
+                                        min="0"
+                                        value={data.reorder_level}
+                                        onChange={(event) =>
+                                            setData(
+                                                'reorder_level',
+                                                event.target.value,
+                                            )
+                                        }
+                                        className="w-full rounded-md border px-3 py-2"
+                                        placeholder="0.000"
+                                    />
+
+                                    {errors.reorder_level && (
+                                        <p className="text-sm text-red-600">
+                                            {errors.reorder_level}
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Remarks */}
                         <div className="space-y-2">
                             <label
                                 htmlFor="remarks"
@@ -498,6 +755,7 @@ export default function Create({ products, uoms }: Props) {
                             )}
                         </div>
 
+                        {/* Active */}
                         <div className="flex items-center gap-3">
                             <input
                                 id="is_active"
@@ -525,6 +783,7 @@ export default function Create({ products, uoms }: Props) {
                             </p>
                         )}
 
+                        {/* Actions */}
                         <div className="flex items-center gap-3">
                             <button
                                 type="submit"

@@ -61,6 +61,10 @@ const mainNavItems: NavItem[] = [
                 title: 'Warehouses',
                 href: '/admin/warehouses',
             },
+            {
+                title: 'Price List',
+                href: '/admin/price-lists',
+            },
         ],
     },
 

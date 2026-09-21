@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\PriceListController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductVariantController;
 use App\Http\Controllers\Admin\UomController;
@@ -56,6 +57,12 @@ Route::prefix('admin')
         ->except(['show'])
         ->parameters([
             'warehouses' => 'warehouse',
+        ]);
+
+        Route::resource('price-lists', PriceListController::class)
+        ->except(['show'])
+        ->parameters([
+            'price-lists' => 'priceList'
         ]);
         
     });

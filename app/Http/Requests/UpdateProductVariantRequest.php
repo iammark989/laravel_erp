@@ -26,7 +26,7 @@ class UpdateProductVariantRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('products_variants', 'sku')
+                Rule::unique('product_variants', 'sku')
                     ->ignore($variant),
             ],
 
@@ -34,7 +34,7 @@ class UpdateProductVariantRequest extends FormRequest
                 'nullable',
                 'string',
                 'max:255',
-                Rule::unique('products_variants', 'barcode')
+                Rule::unique('product_variants', 'barcode')
                     ->ignore($variant),
             ],
 
@@ -42,11 +42,8 @@ class UpdateProductVariantRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('products_variants', 'variant_name')
-                    ->where(
-                        'product_id',
-                        $this->input('product_id')
-                    )
+                Rule::unique('product_variants', 'variant_name')
+                    ->where('product_id', $this->input('product_id'))
                     ->ignore($variant),
             ],
 
@@ -86,6 +83,36 @@ class UpdateProductVariantRequest extends FormRequest
                 'required',
                 'numeric',
                 'min:0.001',
+            ],
+
+            // Price
+            'price_list_id' => [
+                'required',
+                'exists:price_lists,id',
+            ],
+
+            'price' => [
+                'required',
+                'numeric',
+                'min:0',
+            ],
+
+            // Inventory
+            'warehouse_id' => [
+                'required',
+                'exists:warehouses,id',
+            ],
+
+            'quantity_on_hand' => [
+                'required',
+                'numeric',
+                'min:0',
+            ],
+
+            'reorder_level' => [
+                'required',
+                'numeric',
+                'min:0',
             ],
 
             'remarks' => [
