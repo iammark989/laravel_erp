@@ -3,7 +3,9 @@
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ProductVariantController;
 use App\Http\Controllers\Admin\UomController;
+use App\Http\Controllers\Admin\WarehouseController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -42,6 +44,18 @@ Route::prefix('admin')
         ->except(['show'])
         ->parameters([
             'products' => 'product',
+        ]);
+
+        Route::resource('product-variants', ProductVariantController::class)
+        ->except(['show'])
+        ->parameters([
+            'product-variants' => 'productVariant',
+        ]);
+
+        Route::resource('warehouses', WarehouseController::class)
+        ->except(['show'])
+        ->parameters([
+            'warehouses' => 'warehouse',
         ]);
         
     });

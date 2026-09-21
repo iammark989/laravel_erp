@@ -57,6 +57,10 @@ const mainNavItems: NavItem[] = [
                 title: 'UOMs',
                 href: '/admin/uoms',
             },
+            {
+                title: 'Warehouses',
+                href: '/admin/warehouses',
+            },
         ],
     },
 
