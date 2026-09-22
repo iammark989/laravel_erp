@@ -5,9 +5,11 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\PriceListController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductVariantController;
+use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Admin\UomController;
 use App\Http\Controllers\Admin\WarehouseController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\PurchaseOrderController;
 
 Route::get('/', function () {
     return auth()->check()
@@ -65,6 +67,14 @@ Route::prefix('admin')
             'price-lists' => 'priceList'
         ]);
         
+        Route::resource('suppliers', SupplierController::class)
+        ->except(['show'])
+        ->parameters(['suppliers' => 'supplier']);
+
+        Route::resource('purchase-orders', PurchaseOrderController::class)
+        ->except(['show', 'destroy'])
+        ->parameters(['purchase-orders' => 'purchaseOrder']);
+
     });
 
 require __DIR__.'/settings.php';

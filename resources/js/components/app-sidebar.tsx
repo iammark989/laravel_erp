@@ -65,6 +65,10 @@ const mainNavItems: NavItem[] = [
                 title: 'Price List',
                 href: '/admin/price-lists',
             },
+            {
+                title: 'Suppliers',
+                href: '/admin/suppliers',
+            },
         ],
     },
 
