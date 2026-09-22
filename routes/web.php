@@ -2,14 +2,15 @@
 
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\GoodsReceiptController;
 use App\Http\Controllers\Admin\PriceListController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductVariantController;
+use App\Http\Controllers\Admin\PurchaseOrderController;
 use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Admin\UomController;
 use App\Http\Controllers\Admin\WarehouseController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\PurchaseOrderController;
 
 Route::get('/', function () {
     return auth()->check()
@@ -74,6 +75,10 @@ Route::prefix('admin')
         Route::resource('purchase-orders', PurchaseOrderController::class)
         ->except(['show', 'destroy'])
         ->parameters(['purchase-orders' => 'purchaseOrder']);
+
+        Route::resource('goods-receipts', GoodsReceiptController::class)
+        ->except(['show', 'destroy'])
+        ->parameters(['goods-receipts' => 'goodsReceipt']);
 
     });
 
