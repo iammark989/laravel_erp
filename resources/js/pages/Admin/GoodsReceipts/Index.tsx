@@ -150,12 +150,18 @@ export default function Index({ goodsReceipts }: Props) {
                                             </td>
 
                                             <td className="px-4 py-3 text-right">
-                                                <Link
-                                                    href={`/admin/goods-receipts/${goodsReceipt.id}/edit`}
-                                                    className="text-sm font-medium text-primary hover:underline"
-                                                >
-                                                    Edit
-                                                </Link>
+                                                {goodsReceipt.status === 'draft' ? (
+                                                        <Link
+                                                            href={`/admin/goods-receipts/${goodsReceipt.id}/edit`}
+                                                            className="text-sm font-medium text-primary hover:underline"
+                                                        >
+                                                            Edit
+                                                        </Link>
+                                                    ) : (
+                                                        <span className="text-sm text-muted-foreground">
+                                                            Locked
+                                                        </span>
+                                                    )}
                                             </td>
                                         </tr>
                                     ))
