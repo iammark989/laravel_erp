@@ -92,4 +92,26 @@ class ProductController extends Controller
         return to_route('admin.products.index')
             ->with('success', 'Product deactivated successfully.');
     }
+
+    public function details(Product $product): Response
+    {
+        $product->load([
+            'category:id,name',
+            'brand:id,name',
+            'variants' => function ($query) {
+                $query
+                    ->with([
+                        'baseUom:id,code',
+                        'sellingUom:id,code',
+                        'purchasingUom:id,code',
+                    ])
+                    ->orderBy('variant_name');
+            },
+        ]);
+
+        return Inertia::render('Admin/Products/Details', [
+            'product' => $product,
+        ]);
+    }
+    
 }

@@ -208,4 +208,32 @@ class ProductVariantController extends Controller
         return to_route('admin.product-variants.index')
             ->with('success', 'Product variant deactivated successfully.');
     }
+
+    public function details(Product $product, ProductVariant $variant): Response
+    {
+        $variant->load([
+            'product:id,name',
+            'baseUom:id,code',
+            'sellingUom:id,code',
+            'purchasingUom:id,code',
+            'inventories.warehouse:id,warehouse_code,name',
+            'prices.priceList:id,code,description',
+        ]);
+
+        $warehouses = Warehouse::query()
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get([
+                'id',
+                'warehouse_code',
+                'name',
+            ]);
+
+        return Inertia::render('Admin/ProductVariants/Details', [
+            'product' => $product,
+            'variant' => $variant,
+            'warehouses' => $warehouses,
+        ]);
+    }
+
 }

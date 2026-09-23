@@ -50,11 +50,21 @@ Route::prefix('admin')
             'products' => 'product',
         ]);
 
+        Route::get(
+            'products/{product}/details',
+            [ProductController::class, 'details']
+        )->name('products.details');
+
         Route::resource('product-variants', ProductVariantController::class)
         ->except(['show'])
         ->parameters([
             'product-variants' => 'productVariant',
         ]);
+
+        Route::get(
+            'products/{product}/variants/{variant}/details',
+            [ProductVariantController::class, 'details']
+        )->name('products.variants.details');
 
         Route::resource('warehouses', WarehouseController::class)
         ->except(['show'])

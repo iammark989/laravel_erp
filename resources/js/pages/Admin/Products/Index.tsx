@@ -1,4 +1,4 @@
-import AppLayout from '@/layouts/app-layout';
+import AdminLayout from '@/layouts/admin-layout';
 import { Head, Link } from '@inertiajs/react';
 
 interface Category {
@@ -43,7 +43,7 @@ interface Props {
 
 export default function Index({ products }: Props) {
     return (
-        <AppLayout>
+        <AdminLayout>
             <Head title="Products" />
 
             <div className="flex h-full flex-1 flex-col gap-6 p-6">
@@ -130,12 +130,21 @@ export default function Index({ products }: Props) {
                                             </td>
 
                                             <td className="px-4 py-3 text-right">
-                                                <Link
-                                                    href={`/admin/products/${product.id}/edit`}
-                                                    className="text-sm font-medium text-primary hover:underline"
-                                                >
-                                                    Edit
-                                                </Link>
+                                                <div className="flex items-center justify-end gap-3">
+                                                    <Link
+                                                        href={`/admin/products/${product.id}/details`}
+                                                        className="text-sm font-medium text-primary hover:underline"
+                                                    >
+                                                        Details
+                                                    </Link>
+
+                                                    <Link
+                                                        href={`/admin/products/${product.id}/edit`}
+                                                        className="text-sm font-medium text-primary hover:underline"
+                                                    >
+                                                        Edit
+                                                    </Link>
+                                                </div>
                                             </td>
                                         </tr>
                                     ))
@@ -177,6 +186,6 @@ export default function Index({ products }: Props) {
                     </div>
                 )}
             </div>
-        </AppLayout>
+        </AdminLayout>
     );
 }
