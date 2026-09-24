@@ -1,6 +1,7 @@
 import AdminLayout from '@/layouts/admin-layout';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { FormEventHandler } from 'react';
+import { ChangeEvent, FormEventHandler, useState  } from 'react';
+
 
 interface Product {
     id: number;
@@ -60,6 +61,8 @@ interface ProductVariantForm {
 
     remarks: string;
     is_active: boolean;
+
+    images: File[];
 }
 
 export default function Create({
@@ -97,12 +100,52 @@ export default function Create({
 
             remarks: '',
             is_active: true,
+            images: [],
         });
 
-    const submit: FormEventHandler = (event) => {
+        {/** add image */}
+        const [imageFiles, setImageFiles] = useState<File[]>([]);
+        const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+
+        const handleImageChange = (
+            event: ChangeEvent<HTMLInputElement>,
+        ) => {
+            const files = Array.from(event.target.files ?? []);
+
+            setImageFiles(files);
+
+            setImagePreviews(
+                files.map((file) => URL.createObjectURL(file)),
+            );
+
+            setData('images', files);
+        };
+
+        const removeImage = (index: number) => {
+            setImageFiles((current) => {
+                const updatedFiles = current.filter(
+                    (_, fileIndex) => fileIndex !== index,
+                );
+
+                setData('images', updatedFiles);
+
+                return updatedFiles;
+            });
+
+            setImagePreviews((current) =>
+                current.filter(
+                    (_, previewIndex) => previewIndex !== index,
+                ),
+            );
+        };
+
+        {/** submit */}
+   const submit: FormEventHandler = (event) => {
         event.preventDefault();
 
-        post(`/admin/products/${product.id}/variants`);
+        post(`/admin/products/${product.id}/variants`, {
+            forceFormData: true,
+        });
     };
 
     return (
@@ -290,6 +333,52 @@ export default function Create({
                                     <p className="text-sm text-red-600">
                                         {errors.tax_type}
                                     </p>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Variant Images */}
+                        <div className="rounded-lg border p-4">
+                            <h2 className="mb-1 text-sm font-semibold">
+                                Variant Images
+                            </h2>
+
+                            <p className="mb-4 text-sm text-muted-foreground">
+                                Upload one or more images for this product variant.
+                            </p>
+
+                            <div className="space-y-4">
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    multiple
+                                    onChange={handleImageChange}
+                                    className="w-full rounded-md border px-3 py-2 text-sm"
+                                />
+
+                                {imagePreviews.length > 0 && (
+                                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+                                        {imagePreviews.map((preview, index) => (
+                                            <div
+                                                key={preview}
+                                                className="relative overflow-hidden rounded-md border"
+                                            >
+                                                <img
+                                                    src={preview}
+                                                    alt={`Variant preview ${index + 1}`}
+                                                    className="aspect-square w-full object-cover"
+                                                />
+
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeImage(index)}
+                                                    className="absolute right-2 top-2 rounded-md bg-black/70 px-2 py-1 text-xs text-white hover:bg-black/80"
+                                                >
+                                                    Remove
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
                                 )}
                             </div>
                         </div>
@@ -768,7 +857,7 @@ export default function Create({
                             </button>
 
                             <Link
-                                href="/admin/product-variants"
+                                href={`/admin/products/${product.id}/details`}
                                 className="rounded-md border px-4 py-2 text-sm font-medium hover:bg-muted"
                             >
                                 Cancel

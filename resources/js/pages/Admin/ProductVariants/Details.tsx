@@ -40,6 +40,11 @@ interface ProductVariant {
     purchasing_uom?: Uom | null;
     inventories: Inventory[];
     prices: VariantPrice[];
+    images: {
+        id: number;
+        image: string;
+        sort_order: number;
+    }[];
 }
 
 interface Props {
@@ -105,6 +110,42 @@ export default function Details({ product, variant, warehouses, }: Props) {
                         </Link>
                     </div>
                 </div>
+
+                {/* Variant Images */}
+                    <div className="rounded-lg border p-4">
+                        <div className="mb-4">
+                            <h2 className="text-sm font-semibold">
+                                Variant Images
+                            </h2>
+
+                            <p className="text-sm text-muted-foreground">
+                                Images uploaded for this product variant.
+                            </p>
+                        </div>
+
+                        {variant.images.length > 0 ? (
+                            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+                                {variant.images.map((image) => (
+                                    <div
+                                        key={image.id}
+                                        className="overflow-hidden rounded-lg border"
+                                    >
+                                        <img
+                                            src={`/storage/${image.image}`}
+                                            alt={`${variant.variant_name} image`}
+                                            className="aspect-square w-full object-cover"
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="rounded-md border border-dashed p-8 text-center">
+                                <p className="text-sm text-muted-foreground">
+                                    No images uploaded for this variant.
+                                </p>
+                            </div>
+                        )}
+                    </div>
 
                 {/* Variant Information */}
                 <div className="rounded-lg border bg-card">

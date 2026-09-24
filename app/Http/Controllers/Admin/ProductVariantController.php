@@ -11,6 +11,7 @@ use App\Models\PriceList;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\Uom;
+use App\Models\VariantImage;
 use App\Models\VariantInventory;
 use App\Models\VariantPrice;
 use App\Models\Warehouse;
@@ -87,6 +88,18 @@ class ProductVariantController extends Controller
                 'is_active' => $validated['is_active'] ?? true,
                 'created_by' => auth()->id(),
             ]);
+
+            if (!empty($validated['images'])) {
+                foreach ($validated['images'] as $index => $image) {
+                    $path = $image->store('variant-images', 'public');
+
+                    VariantImage::create([
+                        'product_variant_id' => $productVariant->id,
+                        'image' => $path,
+                        'sort_order' => $index + 1,
+                    ]);
+                }
+            }
 
             foreach ($validated['prices'] as $price) {
                 VariantPrice::create([
@@ -253,6 +266,7 @@ class ProductVariantController extends Controller
             'purchasingUom:id,code',
             'inventories.warehouse:id,warehouse_code,name',
             'prices.priceList:id,code,description',
+            'images',
         ]);
 
         $warehouses = Warehouse::query()
