@@ -1,4 +1,4 @@
-import AppLayout from '@/layouts/app-layout';
+import AdminLayout from '@/layouts/admin-layout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
 
@@ -26,14 +26,13 @@ interface PriceList {
 }
 
 interface Props {
-    products: Product[];
+    product: Product;
     uoms: Uom[];
     warehouses: Warehouse[];
     priceLists: PriceList[];
 }
 
 interface ProductVariantForm {
-    product_id: string;
     sku: string;
     barcode: string;
     variant_name: string;
@@ -48,26 +47,29 @@ interface ProductVariantForm {
     purchasing_uom_id: string;
     purchasing_qty: string;
 
-    price_list_id: string;
-    price: string;
+    prices: {
+        price_list_id: string;
+        price: string;
+    }[];
 
-    warehouse_id: string;
-    quantity_on_hand: string;
-    reorder_level: string;
+    inventories: {
+        warehouse_id: string;
+        quantity_on_hand: string;
+        reorder_level: string;
+    }[];
 
     remarks: string;
     is_active: boolean;
 }
 
 export default function Create({
-    products,
+    product,
     uoms,
     warehouses,
     priceLists,
 }: Props) {
     const { data, setData, post, processing, errors } =
         useForm<ProductVariantForm>({
-            product_id: '',
             sku: '',
             barcode: '',
             variant_name: '',
@@ -82,12 +84,16 @@ export default function Create({
             purchasing_uom_id: '',
             purchasing_qty: '1',
 
-            price_list_id: '',
-            price: '',
+            prices: priceLists.map((priceList) => ({
+                price_list_id: String(priceList.id),
+                price: '',
+            })),
 
-            warehouse_id: '',
-            quantity_on_hand: '0',
-            reorder_level: '0',
+            inventories: warehouses.map((warehouse) => ({
+                warehouse_id: String(warehouse.id),
+                quantity_on_hand: '0',
+                reorder_level: '0',
+            })),
 
             remarks: '',
             is_active: true,
@@ -96,14 +102,14 @@ export default function Create({
     const submit: FormEventHandler = (event) => {
         event.preventDefault();
 
-        post('/admin/product-variants');
+        post(`/admin/products/${product.id}/variants`);
     };
 
     return (
-        <AppLayout>
+        <AdminLayout>
             <Head title="Create Product Variant" />
 
-            <div className="flex h-full flex-1 flex-col gap-6 p-6">
+            <div className="flex flex-1 flex-col gap-6 p-4 md:p-6">
                 <div>
                     <h1 className="text-2xl font-semibold">
                         Create Product Variant
@@ -115,48 +121,18 @@ export default function Create({
                     </p>
                 </div>
 
-                <div className="max-w-4xl rounded-lg border p-6">
+                 <div className="w-full max-w-4xl self-center rounded-lg border p-6">
                     <form onSubmit={submit} className="space-y-6">
                         {/* Product Information */}
                         <div className="grid gap-6 md:grid-cols-2">
                             <div className="space-y-2">
-                                <label
-                                    htmlFor="product_id"
-                                    className="text-sm font-medium"
-                                >
+                                <label className="text-sm font-medium">
                                     Product
                                 </label>
 
-                                <select
-                                    id="product_id"
-                                    value={data.product_id}
-                                    onChange={(event) =>
-                                        setData(
-                                            'product_id',
-                                            event.target.value,
-                                        )
-                                    }
-                                    className="w-full rounded-md border px-3 py-2"
-                                >
-                                    <option value="">
-                                        Select product
-                                    </option>
-
-                                    {products.map((product) => (
-                                        <option
-                                            key={product.id}
-                                            value={product.id}
-                                        >
-                                            {product.name}
-                                        </option>
-                                    ))}
-                                </select>
-
-                                {errors.product_id && (
-                                    <p className="text-sm text-red-600">
-                                        {errors.product_id}
-                                    </p>
-                                )}
+                                <div className="rounded-md border bg-muted/50 px-3 py-2 text-sm">
+                                    {product.name}
+                                </div>
                             </div>
 
                             <div className="space-y-2">
@@ -533,83 +509,75 @@ export default function Create({
                             </h2>
 
                             <p className="mb-4 text-sm text-muted-foreground">
-                                Set the initial price for this variant.
+                                Set the initial price for each active price list.
                             </p>
 
-                            <div className="grid gap-6 md:grid-cols-2">
-                                <div className="space-y-2">
-                                    <label
-                                        htmlFor="price_list_id"
-                                        className="text-sm font-medium"
-                                    >
-                                        Price List
-                                    </label>
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-sm">
+                                    <thead>
+                                        <tr className="border-b text-left">
+                                            <th className="px-3 py-2 font-medium">
+                                                Price List
+                                            </th>
+                                            <th className="px-3 py-2 font-medium">
+                                                Description
+                                            </th>
+                                            <th className="w-48 px-3 py-2 font-medium">
+                                                Price
+                                            </th>
+                                        </tr>
+                                    </thead>
 
-                                    <select
-                                        id="price_list_id"
-                                        value={data.price_list_id}
-                                        onChange={(event) =>
-                                            setData(
-                                                'price_list_id',
-                                                event.target.value,
-                                            )
-                                        }
-                                        className="w-full rounded-md border px-3 py-2"
-                                    >
-                                        <option value="">
-                                            Select price list
-                                        </option>
-
-                                        {priceLists.map((priceList) => (
-                                            <option
+                                    <tbody>
+                                        {priceLists.map((priceList, index) => (
+                                            <tr
                                                 key={priceList.id}
-                                                value={priceList.id}
+                                                className="border-b last:border-0"
                                             >
-                                                {priceList.code}
-                                                {priceList.description
-                                                    ? ` — ${priceList.description}`
-                                                    : ''}
-                                            </option>
+                                                <td className="px-3 py-3 font-medium">
+                                                    {priceList.code}
+                                                </td>
+
+                                                <td className="px-3 py-3 text-muted-foreground">
+                                                    {priceList.description || '—'}
+                                                </td>
+
+                                                <td className="px-3 py-3">
+                                                    <input
+                                                        type="number"
+                                                        step="0.01"
+                                                        min="0"
+                                                        value={data.prices[index]?.price ?? ''}
+                                                        onChange={(event) => {
+                                                            const prices = [...data.prices];
+
+                                                            prices[index] = {
+                                                                ...prices[index],
+                                                                price: event.target.value,
+                                                            };
+
+                                                            setData('prices', prices);
+                                                        }}
+                                                        className="w-full rounded-md border px-3 py-2"
+                                                        placeholder="0.00"
+                                                    />
+
+                                                    {errors[
+                                                        `prices.${index}.price` as keyof typeof errors
+                                                    ] && (
+                                                        <p className="mt-1 text-sm text-red-600">
+                                                            {
+                                                                errors[
+                                                                    `prices.${index}.price` as keyof typeof errors
+                                                                ]
+                                                            }
+                                                        </p>
+                                                    )}
+                                                </td>
+                                            </tr>
                                         ))}
-                                    </select>
-
-                                    {errors.price_list_id && (
-                                        <p className="text-sm text-red-600">
-                                            {errors.price_list_id}
-                                        </p>
-                                    )}
-                                </div>
-
-                                <div className="space-y-2">
-                                    <label
-                                        htmlFor="price"
-                                        className="text-sm font-medium"
-                                    >
-                                        Price
-                                    </label>
-
-                                    <input
-                                        id="price"
-                                        type="number"
-                                        step="0.01"
-                                        min="0"
-                                        value={data.price}
-                                        onChange={(event) =>
-                                            setData(
-                                                'price',
-                                                event.target.value,
-                                            )
-                                        }
-                                        className="w-full rounded-md border px-3 py-2"
-                                        placeholder="0.00"
-                                    />
-
-                                    {errors.price && (
-                                        <p className="text-sm text-red-600">
-                                            {errors.price}
-                                        </p>
-                                    )}
-                                </div>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
 
@@ -620,112 +588,116 @@ export default function Create({
                             </h2>
 
                             <p className="mb-4 text-sm text-muted-foreground">
-                                Set the starting stock for this variant.
+                                Set the opening stock and reorder level for each active warehouse.
                             </p>
 
-                            <div className="grid gap-6 md:grid-cols-3">
-                                <div className="space-y-2">
-                                    <label
-                                        htmlFor="warehouse_id"
-                                        className="text-sm font-medium"
-                                    >
-                                        Warehouse
-                                    </label>
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-sm">
+                                    <thead>
+                                        <tr className="border-b text-left">
+                                            <th className="px-3 py-2 font-medium">
+                                                Warehouse
+                                            </th>
+                                            <th className="w-48 px-3 py-2 font-medium">
+                                                Initial Quantity
+                                            </th>
+                                            <th className="w-48 px-3 py-2 font-medium">
+                                                Reorder Level
+                                            </th>
+                                        </tr>
+                                    </thead>
 
-                                    <select
-                                        id="warehouse_id"
-                                        value={data.warehouse_id}
-                                        onChange={(event) =>
-                                            setData(
-                                                'warehouse_id',
-                                                event.target.value,
-                                            )
-                                        }
-                                        className="w-full rounded-md border px-3 py-2"
-                                    >
-                                        <option value="">
-                                            Select warehouse
-                                        </option>
-
-                                        {warehouses.map((warehouse) => (
-                                            <option
+                                    <tbody>
+                                        {warehouses.map((warehouse, index) => (
+                                            <tr
                                                 key={warehouse.id}
-                                                value={warehouse.id}
+                                                className="border-b last:border-0"
                                             >
-                                                {warehouse.warehouse_code} —{' '}
-                                                {warehouse.name}
-                                            </option>
+                                                <td className="px-3 py-3 font-medium">
+                                                    {warehouse.warehouse_code} — {warehouse.name}
+                                                </td>
+
+                                                <td className="px-3 py-3">
+                                                    <input
+                                                        type="number"
+                                                        step="0.001"
+                                                        min="0"
+                                                        value={
+                                                            data.inventories[index]
+                                                                ?.quantity_on_hand ?? '0'
+                                                        }
+                                                        onChange={(event) => {
+                                                            const inventories = [
+                                                                ...data.inventories,
+                                                            ];
+
+                                                            inventories[index] = {
+                                                                ...inventories[index],
+                                                                quantity_on_hand:
+                                                                    event.target.value,
+                                                            };
+
+                                                            setData('inventories', inventories);
+                                                        }}
+                                                        className="w-full rounded-md border px-3 py-2"
+                                                        placeholder="0.000"
+                                                    />
+
+                                                    {errors[
+                                                        `inventories.${index}.quantity_on_hand` as keyof typeof errors
+                                                    ] && (
+                                                        <p className="mt-1 text-sm text-red-600">
+                                                            {
+                                                                errors[
+                                                                    `inventories.${index}.quantity_on_hand` as keyof typeof errors
+                                                                ]
+                                                            }
+                                                        </p>
+                                                    )}
+                                                </td>
+
+                                                <td className="px-3 py-3">
+                                                    <input
+                                                        type="number"
+                                                        step="0.001"
+                                                        min="0"
+                                                        value={
+                                                            data.inventories[index]
+                                                                ?.reorder_level ?? '0'
+                                                        }
+                                                        onChange={(event) => {
+                                                            const inventories = [
+                                                                ...data.inventories,
+                                                            ];
+
+                                                            inventories[index] = {
+                                                                ...inventories[index],
+                                                                reorder_level:
+                                                                    event.target.value,
+                                                            };
+
+                                                            setData('inventories', inventories);
+                                                        }}
+                                                        className="w-full rounded-md border px-3 py-2"
+                                                        placeholder="0.000"
+                                                    />
+
+                                                    {errors[
+                                                        `inventories.${index}.reorder_level` as keyof typeof errors
+                                                    ] && (
+                                                        <p className="mt-1 text-sm text-red-600">
+                                                            {
+                                                                errors[
+                                                                    `inventories.${index}.reorder_level` as keyof typeof errors
+                                                                ]
+                                                            }
+                                                        </p>
+                                                    )}
+                                                </td>
+                                            </tr>
                                         ))}
-                                    </select>
-
-                                    {errors.warehouse_id && (
-                                        <p className="text-sm text-red-600">
-                                            {errors.warehouse_id}
-                                        </p>
-                                    )}
-                                </div>
-
-                                <div className="space-y-2">
-                                    <label
-                                        htmlFor="quantity_on_hand"
-                                        className="text-sm font-medium"
-                                    >
-                                        Initial Quantity
-                                    </label>
-
-                                    <input
-                                        id="quantity_on_hand"
-                                        type="number"
-                                        step="0.001"
-                                        min="0"
-                                        value={data.quantity_on_hand}
-                                        onChange={(event) =>
-                                            setData(
-                                                'quantity_on_hand',
-                                                event.target.value,
-                                            )
-                                        }
-                                        className="w-full rounded-md border px-3 py-2"
-                                        placeholder="0.000"
-                                    />
-
-                                    {errors.quantity_on_hand && (
-                                        <p className="text-sm text-red-600">
-                                            {errors.quantity_on_hand}
-                                        </p>
-                                    )}
-                                </div>
-
-                                <div className="space-y-2">
-                                    <label
-                                        htmlFor="reorder_level"
-                                        className="text-sm font-medium"
-                                    >
-                                        Reorder Level
-                                    </label>
-
-                                    <input
-                                        id="reorder_level"
-                                        type="number"
-                                        step="0.001"
-                                        min="0"
-                                        value={data.reorder_level}
-                                        onChange={(event) =>
-                                            setData(
-                                                'reorder_level',
-                                                event.target.value,
-                                            )
-                                        }
-                                        className="w-full rounded-md border px-3 py-2"
-                                        placeholder="0.000"
-                                    />
-
-                                    {errors.reorder_level && (
-                                        <p className="text-sm text-red-600">
-                                            {errors.reorder_level}
-                                        </p>
-                                    )}
-                                </div>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
 
@@ -805,6 +777,6 @@ export default function Create({
                     </form>
                 </div>
             </div>
-        </AppLayout>
+        </AdminLayout>
     );
 }

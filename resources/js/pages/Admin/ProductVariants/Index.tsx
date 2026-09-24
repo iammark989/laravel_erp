@@ -1,4 +1,4 @@
-import AppLayout from '@/layouts/app-layout';
+import AdminLayout from '@/layouts/admin-layout';
 import { Head, Link } from '@inertiajs/react';
 
 interface Product {
@@ -51,10 +51,10 @@ interface Props {
 
 export default function Index({ variants }: Props) {
     return (
-        <AppLayout>
+        <AdminLayout>
             <Head title="Product Variants" />
 
-            <div className="flex h-full flex-1 flex-col gap-6 p-6">
+            <div className="flex flex-1 flex-col gap-6 p-4 md:p-6">
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-2xl font-semibold">
@@ -199,6 +199,6 @@ export default function Index({ variants }: Props) {
                     </div>
                 )}
             </div>
-        </AppLayout>
+        </AdminLayout>
     );
 }

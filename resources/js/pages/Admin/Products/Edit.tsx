@@ -1,4 +1,4 @@
-import AppLayout from '@/layouts/app-layout';
+import AdminLayout from '@/layouts/admin-layout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
 
@@ -60,10 +60,10 @@ export default function Edit({
     };
 
     return (
-        <AppLayout>
+        <AdminLayout>
             <Head title="Edit Product" />
 
-            <div className="flex h-full flex-1 flex-col gap-6 p-6">
+            <div className="flex flex-1 flex-col gap-6 p-4 md:p-6">
                 <div>
                     <h1 className="text-2xl font-semibold">
                         Edit Product
@@ -74,7 +74,7 @@ export default function Edit({
                     </p>
                 </div>
 
-                <div className="max-w-3xl rounded-lg border p-6">
+                <div className="w-full max-w-4xl self-center rounded-lg border p-6">
                     <form onSubmit={submit} className="space-y-6">
                         <div className="grid gap-6 md:grid-cols-2">
                             <div className="space-y-2">
@@ -344,6 +344,6 @@ export default function Edit({
                     </form>
                 </div>
             </div>
-        </AppLayout>
+        </AdminLayout>
     );
 }

@@ -47,7 +47,7 @@ return new class extends Migration
 
             $table->string('reference_type')->nullable();
             $table->string('invoice_no')->nullable();
-            $table->string('reference_number')->unique();
+            $table->string('reference_number')->unique()->nullable();
 
             $table->foreignId('warehouse_id')
                 ->nullable()

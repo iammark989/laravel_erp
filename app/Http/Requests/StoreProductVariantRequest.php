@@ -15,8 +15,6 @@ class StoreProductVariantRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'product_id' => ['required', 'exists:products,id'],
-
             'sku' => [
                 'required',
                 'string',
@@ -36,7 +34,7 @@ class StoreProductVariantRequest extends FormRequest
                 'string',
                 'max:255',
                 Rule::unique('product_variants', 'variant_name')
-                    ->where('product_id', $this->input('product_id')),
+                ->where('product_id', $this->route('product')->id),
             ],
 
             'cost_price' => [
@@ -78,30 +76,42 @@ class StoreProductVariantRequest extends FormRequest
             ],
 
             // Initial Price
-            'price_list_id' => [
+            'prices' => [
+                'required',
+                'array',
+                'min:1',
+            ],
+
+            'prices.*.price_list_id' => [
                 'required',
                 'exists:price_lists,id',
             ],
 
-            'price' => [
+            'prices.*.price' => [
                 'required',
                 'numeric',
                 'min:0',
             ],
 
             // Initial Inventory
-            'warehouse_id' => [
+            'inventories' => [
+                'required',
+                'array',
+                'min:1',
+            ],
+
+            'inventories.*.warehouse_id' => [
                 'required',
                 'exists:warehouses,id',
             ],
 
-            'quantity_on_hand' => [
+            'inventories.*.quantity_on_hand' => [
                 'required',
                 'numeric',
                 'min:0',
             ],
 
-            'reorder_level' => [
+            'inventories.*.reorder_level' => [
                 'required',
                 'numeric',
                 'min:0',

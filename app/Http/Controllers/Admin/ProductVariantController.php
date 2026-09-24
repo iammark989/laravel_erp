@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProductVariantRequest;
 use App\Http\Requests\UpdateProductVariantRequest;
+use App\Models\InventoryTransaction;
+use App\Models\InventoryTransactionItem;
 use App\Models\PriceList;
 use App\Models\Product;
 use App\Models\ProductVariant;
@@ -33,12 +35,9 @@ class ProductVariantController extends Controller
         ]);
     }
 
-    public function create(): Response
+    public function create(Product $product): Response
     {
-        $products = Product::query()
-            ->where('is_active', true)
-            ->orderBy('name')
-            ->get(['id', 'name']);
+        abort_unless($product->is_active, 404);
 
         $uoms = Uom::query()
             ->where('is_active', true)
@@ -56,20 +55,24 @@ class ProductVariantController extends Controller
             ->get(['id', 'code', 'description']);
 
         return Inertia::render('Admin/ProductVariants/Create', [
-            'products' => $products,
+            'product' => $product,
             'uoms' => $uoms,
             'warehouses' => $warehouses,
             'priceLists' => $priceLists,
         ]);
     }
 
-    public function store(StoreProductVariantRequest $request): RedirectResponse
-    {
+    public function store(
+        StoreProductVariantRequest $request,
+        Product $product
+    ): RedirectResponse {
         $validated = $request->validated();
 
-        DB::transaction(function () use ($validated) {
+        abort_unless($product->is_active, 404);
+
+        DB::transaction(function () use ($validated, $product) {
             $productVariant = ProductVariant::create([
-                'product_id' => $validated['product_id'],
+                'product_id' => $product->id,
                 'sku' => $validated['sku'],
                 'barcode' => $validated['barcode'] ?? null,
                 'variant_name' => $validated['variant_name'],
@@ -85,22 +88,54 @@ class ProductVariantController extends Controller
                 'created_by' => auth()->id(),
             ]);
 
-            VariantPrice::create([
-                'product_variant_id' => $productVariant->id,
-                'price_list_id' => $validated['price_list_id'],
-                'price' => $validated['price'],
-            ]);
+            foreach ($validated['prices'] as $price) {
+                VariantPrice::create([
+                    'product_variant_id' => $productVariant->id,
+                    'price_list_id' => $price['price_list_id'],
+                    'price' => $price['price'],
+                ]);
+            }
+
+            foreach ($validated['inventories'] as $inventory) {
+            $initialQuantity = (float) $inventory['quantity_on_hand'];
 
             VariantInventory::create([
                 'product_variant_id' => $productVariant->id,
-                'warehouse_id' => $validated['warehouse_id'],
-                'quantity_on_hand' => $validated['quantity_on_hand'],
-                'reorder_level' => $validated['reorder_level'],
+                'warehouse_id' => $inventory['warehouse_id'],
+                'quantity_on_hand' => $initialQuantity,
+                'reorder_level' => $inventory['reorder_level'],
             ]);
+
+            if ($initialQuantity <= 0) {
+                continue;
+            }
+
+            $inventoryTransaction = InventoryTransaction::create([
+                'transaction_type' => 'stock_in',
+                'reason' => 'initial_stock',
+                'status' => 'posted',
+                'reference_type' => 'product_variant',
+                'invoice_no' => null,
+                'reference_number' => null,
+                'warehouse_id' => $inventory['warehouse_id'],
+                'remarks' => 'Initial stock for newly created product variant.',
+                'created_by' => auth()->id(),
+                'posted_at' => now(),
+            ]);
+
+            InventoryTransactionItem::create([
+                'inventory_transaction_id' => $inventoryTransaction->id,
+                'product_variant_id' => $productVariant->id,
+                'quantity' => $initialQuantity,
+                'stock_before' => 0,
+                'stock_after' => $initialQuantity,
+                'remarks' => 'Opening inventory.',
+            ]);
+        }
         });
 
-        return to_route('admin.product-variants.index')
-            ->with('success', 'Product variant created successfully.');
+        return to_route('admin.products.details', $product)
+        ->with('success', 'Product variant created successfully.');
     }
 
     public function edit(ProductVariant $productVariant): Response

@@ -66,6 +66,16 @@ Route::prefix('admin')
             [ProductVariantController::class, 'details']
         )->name('products.variants.details');
 
+        Route::get(
+            'products/{product}/variants/create',
+            [ProductVariantController::class, 'create']
+        )->name('products.variants.create');
+
+        Route::post(
+            'products/{product}/variants',
+            [ProductVariantController::class, 'store']
+        )->name('products.variants.store');
+
         Route::resource('warehouses', WarehouseController::class)
         ->except(['show'])
         ->parameters([

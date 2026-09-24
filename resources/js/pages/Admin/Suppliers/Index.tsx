@@ -1,7 +1,7 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 
-import AppLayout from '@/layouts/app-layout';
+import AdminLayout from '@/layouts/admin-layout';
 
 type Supplier = {
     id: number;
@@ -42,10 +42,10 @@ export default function Index({ suppliers }: Props) {
     };
 
     return (
-        <AppLayout>
+        <AdminLayout>
             <Head title="Suppliers" />
 
-            <div className="flex h-full flex-1 flex-col gap-6 rounded-xl p-4">
+            <div className="flex flex-1 flex-col gap-6 p-4 md:p-6">
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-2xl font-semibold tracking-tight">
@@ -224,6 +224,6 @@ export default function Index({ suppliers }: Props) {
                     )}
                 </div>
             </div>
-        </AppLayout>
+        </AdminLayout>
     );
 }

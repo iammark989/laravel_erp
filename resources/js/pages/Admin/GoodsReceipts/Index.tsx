@@ -1,3 +1,4 @@
+import AdminLayout from '@/layouts/admin-layout';
 import { Head, Link } from '@inertiajs/react';
 
 interface PurchaseOrder {
@@ -40,10 +41,9 @@ interface Props {
 
 export default function Index({ goodsReceipts }: Props) {
     return (
-        <>
+        <AdminLayout>
             <Head title="Goods Receipts" />
-
-            <div className="space-y-6 p-6">
+            <div className="flex flex-1 flex-col gap-6 p-4 md:p-6">
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-2xl font-semibold">
@@ -210,6 +210,6 @@ export default function Index({ goodsReceipts }: Props) {
                     )}
                 </div>
             </div>
-        </>
+        </AdminLayout>
     );
 }

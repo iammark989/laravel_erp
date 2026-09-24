@@ -1,3 +1,4 @@
+import AdminLayout from '@/layouts/admin-layout';
 import { Head, Link } from '@inertiajs/react';
 
 interface Category {
@@ -48,10 +49,10 @@ interface Props {
 
 export default function Details({ product }: Props) {
     return (
-        <>
+        <AdminLayout>
             <Head title={`Product Details - ${product.name}`} />
 
-            <div className="space-y-6">
+            <div className="flex flex-1 flex-col gap-6 p-4 md:p-6">
                 {/* Page Header */}
                 <div className="flex items-center justify-between">
                     <div>
@@ -291,6 +292,6 @@ export default function Details({ product }: Props) {
                     </div>
                 </div>
             </div>
-        </>
+        </AdminLayout>
     );
 }
